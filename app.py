@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 def process_data(engine, num):
     conn = engine.connect()
 
-    data = pd.read_sql('SELECT age FROM test_table WHERE len(name) < 6', conn)
+    data = pd.read_sql('SELECT age FROM test_table WHERE LENGTH(name) < 6', conn)
 
     max = data.max()
     min = data.min()
