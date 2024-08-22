@@ -19,7 +19,7 @@ services:
       retries: 5
 
   app:
-    build: .
+    image: ivanays/python_postgres_app-app
     depends_on:
       db:
         condition: service_healthy
