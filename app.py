@@ -5,10 +5,8 @@ from sqlalchemy import create_engine
 def process_data(engine, num):
     conn = engine.connect()
 
-    data = pd.read_sql('SELECT age FROM test_table WHERE LENGTH(name) < 6', conn)
-
-    max = data.max()
-    min = data.min()
+    max = pd.read_sql('SELECT MAX(age) FROM test_table WHERE LENGTH(name) < 6', conn)
+    min = pd.read_sql('SELECT MIN(age) FROM test_table WHERE LENGTH(name) < 6', conn)
 
     if num == 1:
         return max
