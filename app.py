@@ -1,34 +1,28 @@
-import pandas as pd
 import psycopg2
-from sqlalchemy import create_engine
+from psycopg2 import Error
 
-def process_data(engine, num):
-    conn = engine.connect()
+try:
+    connection = psycopg2.connect(user="postgres",
+                                  password="password",
+                                  host="db",
+                                  port="5432",
+                                  database="ivanayskiy")
 
-    data = pd.read_sql('SELECT age FROM test_table WHERE LENGTH(name) < 6', conn)
+    cursor = connection.cursor()
+    postgreSQL_select_Query = "SELECT MAX(age), MIN(age) FROM test_table WHERE LENGTH(name) < 6"
 
-    max = data.max()
-    min = data.min()
+    cursor.execute(postgreSQL_select_Query)
+   
+    mobile_records = cursor.fetchall()
+ 
+    for row in mobile_records:
+        print("Максимальный возраст для людей, длина имён которых меньше 6 символов равен: ", row[0], )
+        print("Минимальный возраст для людей, длина имён которых меньше 6 символов равен: ", row[1], )
 
-    if num == 1:
-        return max
-    elif num == 2:
-        return min
-
-
-if __name__ == "__main__":
-    db_user = 'postgres'
-    db_password = 'password'
-    db_host = 'db'
-    db_port = '5432'
-    db_name = 'ivanayskiy'
-
-    engine = create_engine(f'postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}')
-
-    result_max = process_data(engine,1)
-    result_min = process_data(engine,2)
-
-    print("Максимальный возраст для людей, длина имён которых меньше 6 символов равен: ")
-    print(result_max)
-    print("Минимальный возраст для людей, длина имён которых меньше 6 символов равен: ")
-    print(result_min)
+except (Exception, Error) as error:
+    print("Ошибка при работе с PostgreSQL", error)
+finally:
+    if connection:
+        cursor.close()
+        connection.close()
+        print("Соединение с PostgreSQL закрыто")
